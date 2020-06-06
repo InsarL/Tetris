@@ -9,20 +9,31 @@ namespace Tetris
 {
     class Game
     {
-        public int GameFieldSize = 10;
+        public static int HorizontalSizePlayingField = 10;
+        public int VerticalSizePlayingField = 20;
         public int CellSize = 25;
+        public Point Square = new Point(HorizontalSizePlayingField/2, -1);
+
+
+
         public void Draw(Graphics graphiks)
         {
-            for (int i = 0; i <= GameFieldSize; i++)
+            for (int i = 0; i <= HorizontalSizePlayingField; i++)
             {
-                graphiks.DrawLine(Pens.Black, 0, i * CellSize, GameFieldSize*CellSize, i * CellSize);
-                graphiks.DrawLine(Pens.Black, 0, (GameFieldSize+ i) * CellSize,
-                                                 GameFieldSize * CellSize, (GameFieldSize+i) * CellSize);
-                graphiks.DrawLine(Pens.Black, i * CellSize, 0, i * CellSize, GameFieldSize * CellSize);
-                graphiks.DrawLine(Pens.Black, i*CellSize, GameFieldSize*CellSize,i*CellSize , 2*CellSize*GameFieldSize);
-
+                graphiks.DrawLine(Pens.Black, 0, i * CellSize, HorizontalSizePlayingField * CellSize, i * CellSize);
+                graphiks.DrawLine(Pens.Black, 0, (HorizontalSizePlayingField + i) * CellSize,
+                                                  HorizontalSizePlayingField * CellSize, (HorizontalSizePlayingField + i) * CellSize);
+                graphiks.DrawLine(Pens.Black, i * CellSize, 0, i * CellSize, VerticalSizePlayingField * CellSize);
             }
-            
+
+            graphiks.FillRectangle(Brushes.BlueViolet, Square.X*CellSize, Square.Y*CellSize, CellSize, CellSize);
+        }
+
+        public void Update()
+        {
+            Square.Y++;
+            if (Square.Y == VerticalSizePlayingField)
+                Square.Y = -1;
         }
     }
 }

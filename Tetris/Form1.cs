@@ -24,5 +24,11 @@ namespace Tetris
         {
             game.Draw(e.Graphics);
         }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            game.Update();
+            pictureBox1.Refresh();
+        }
     }
 }
