@@ -23,11 +23,18 @@ namespace Tetris
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             game.Draw(e.Graphics);
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             game.Update();
+            pictureBox1.Refresh();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            game.MovementFigure(e.KeyCode);
             pictureBox1.Refresh();
         }
     }

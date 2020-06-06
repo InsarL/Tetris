@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Tetris
 {
@@ -12,7 +13,8 @@ namespace Tetris
         public static int HorizontalSizePlayingField = 10;
         public int VerticalSizePlayingField = 20;
         public int CellSize = 25;
-        public Point Square = new Point(HorizontalSizePlayingField/2, -1);
+        public Point Square = new Point(HorizontalSizePlayingField / 2, -1);
+        public Keys DirectionFigure;
 
 
 
@@ -26,14 +28,38 @@ namespace Tetris
                 graphiks.DrawLine(Pens.Black, i * CellSize, 0, i * CellSize, VerticalSizePlayingField * CellSize);
             }
 
-            graphiks.FillRectangle(Brushes.BlueViolet, Square.X*CellSize, Square.Y*CellSize, CellSize, CellSize);
+            graphiks.FillRectangle(Brushes.BlueViolet, Square.X * CellSize, Square.Y * CellSize, CellSize, CellSize);
+        }
+
+        public void MovementFigure(Keys key)
+        {
+            if (key == Keys.Down ||
+                key == Keys.Up ||
+                key == Keys.Right ||
+                key == Keys.Left)
+                DirectionFigure = key;
+
+            if (DirectionFigure == Keys.Left)
+                Square.X--;
+
+            if (DirectionFigure == Keys.Right)
+                Square.X++;
+
+            if (DirectionFigure == Keys.Down)
+                Square.Y++;
+
+            if (DirectionFigure == Keys.Up)
+                return;
+
+            DirectionFigure = Keys.None;
         }
 
         public void Update()
         {
-            Square.Y++;
-            if (Square.Y == VerticalSizePlayingField)
+            if (Square.Y >= VerticalSizePlayingField-1)
                 Square.Y = -1;
+
+            Square.Y++;
         }
     }
 }
