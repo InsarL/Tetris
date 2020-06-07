@@ -35,7 +35,9 @@ namespace Tetris
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             game.MovementFigure(e.KeyCode);
+            label1.Text = "Очки:" + game.Score;
             pictureBox1.Refresh();
         }
+
     }
 }
