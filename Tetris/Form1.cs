@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
@@ -16,14 +9,14 @@ namespace Tetris
         public Form1()
         {
             InitializeComponent();
-
             game = new Game();
+            game.Defeat += OnDefeat;
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             game.Draw(e.Graphics);
-            
+            label1.Text = "Очки:" + game.Score;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -35,9 +28,15 @@ namespace Tetris
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             game.MovementFigure(e.KeyCode);
-            label1.Text = "Очки:" + game.Score;
             pictureBox1.Refresh();
         }
 
+        private void OnDefeat()
+        {
+            timer1.Stop();
+            pictureBox1.Refresh();
+            MessageBox.Show("Game Over");
+            timer1.Start();
+        }
     }
 }

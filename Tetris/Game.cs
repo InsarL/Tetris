@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tetris
@@ -16,6 +14,7 @@ namespace Tetris
         public Point Square = new Point(HorizontalSizePlayingField / 2, -1);
         public List<Point> BusyCell = new List<Point>();
         public int Score = 0;
+        public event Action Defeat;
 
         public void Draw(Graphics graphiks)
         {
@@ -48,13 +47,15 @@ namespace Tetris
                 Square.Y++;
 
             if (key == Keys.Space)
+            {
                 while (IsPossibleMoveShapeInThisDirection(Square.X, Square.Y + 1))
                     Square.Y++;
+                BusyCell.Add(new Point(Square.X, Square.Y));
+                Square.Y = -1;
+            }
 
             if (key == Keys.Up)
-                return;
-
-            key = Keys.None;
+                return;  
         }
 
         public bool IsPossibleMoveShapeInThisDirection(int x, int y)
@@ -64,47 +65,53 @@ namespace Tetris
 
         public void Update()
         {
-            int Count = 0;
+            int lineСountingAndScoresDeduction = 0;
             if (Square.Y == VerticalSizePlayingField - 1 || BusyCell.Contains(new Point(Square.X, Square.Y + 1)))
             {
                 BusyCell.Add(new Point(Square.X, Square.Y));
                 Square.Y = -1;
             }
 
-            Square.Y++;
+            if (BusyCell.Contains(new Point(Square.X, Square.Y + 1)) && Square.Y < 1)
+            {
+                Score = 0;
+                BusyCell.Clear();
+                Square = new Point(HorizontalSizePlayingField / 2, -1);
+                Defeat();
+            }
 
             for (int i = 0; i < VerticalSizePlayingField; i++)
             {
                 List<Point> cellsUp = new List<Point>();
                 if (BusyCell.Count(x => x.Y == i) == HorizontalSizePlayingField)
                 {
-
                     cellsUp = BusyCell.Where(x => x.Y < i).Select(point => new Point(point.X, point.Y + 1)).ToList();
                     BusyCell.RemoveAll(x => x.Y <= i);
                     BusyCell.AddRange(cellsUp);
-                    Count++;
+                    lineСountingAndScoresDeduction++;
                 }
             }
 
-            switch (Count)
+            switch (lineСountingAndScoresDeduction)
             {
                 case 0:
-                    Count = 0 ;
+                    lineСountingAndScoresDeduction = 0;
                     break;
-                case 1:  
-                    Count = 100;
+                case 1:
+                    lineСountingAndScoresDeduction = 100;
                     break;
                 case 2:
-                    Count = 300;
+                    lineСountingAndScoresDeduction = 300;
                     break;
                 case 3:
-                    Count = 700;
+                    lineСountingAndScoresDeduction = 700;
                     break;
                 default:
-                    Count = 1500;
+                    lineСountingAndScoresDeduction = 1500;
                     break;
             }
-            Score = Score + Count;
+            Score += lineСountingAndScoresDeduction;
+            Square.Y++;
         }
     }
 }
