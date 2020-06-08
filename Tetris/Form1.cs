@@ -38,5 +38,6 @@ namespace Tetris
             MessageBox.Show("Game Over");
             timer1.Start();
         }
+        
     }
 }

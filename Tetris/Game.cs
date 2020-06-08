@@ -8,13 +8,42 @@ namespace Tetris
 {
     class Game
     {
-        public static int HorizontalSizePlayingField = 10;
-        public static int VerticalSizePlayingField = 20;
+        public const int HorizontalSizePlayingField = 10;
+        public const int VerticalSizePlayingField = 20;
         public int CellSize = 25;
-        public Point Square = new Point(HorizontalSizePlayingField / 2, -1);
+
         public List<Point> BusyCell = new List<Point>();
         public int Score = 0;
         public event Action Defeat;
+        public Figures figure = new Figures();
+        public List<Point> SpecificFigure = new List<Point>();
+
+
+        public void MovementFigure(Keys key)
+        {
+
+            if (key == Keys.Left && IsPossibleMoveShapeInThisDirection(figure.Square.X - 1, figure.Square.Y))
+                figure.Square.X--;
+
+            if (key == Keys.Right && IsPossibleMoveShapeInThisDirection(figure.Square.X + 1, figure.Square.Y))
+                figure.Square.X++;
+
+            if (key == Keys.Down
+                && IsPossibleMoveShapeInThisDirection(figure.Square.X, figure.Square.Y + 1))
+                figure.Square.Y++;
+
+            if (key == Keys.Space)
+            {
+                while (IsPossibleMoveShapeInThisDirection(figure.Square.X, figure.Square.Y + 1))
+                    figure.Square.Y++;
+                BusyCell.Add(new Point(figure.Square.X, figure.Square.Y));
+                figure.Square.Y = -1;
+            }
+
+            if (key == Keys.Up)
+                return;
+
+        }
 
         public void Draw(Graphics graphiks)
         {
@@ -26,37 +55,20 @@ namespace Tetris
                 graphiks.DrawLine(Pens.Black, i * CellSize, 0, i * CellSize, VerticalSizePlayingField * CellSize);
             }
 
-            graphiks.FillRectangle(Brushes.BlueViolet, Square.X * CellSize, Square.Y * CellSize, CellSize, CellSize);
+            graphiks.FillRectangle(Brushes.BlueViolet, figure.Square.X * CellSize, figure.Square.Y * CellSize, CellSize, CellSize);
 
             foreach (Point cell in BusyCell)
             {
                 graphiks.FillRectangle(Brushes.BlueViolet, cell.X * CellSize, cell.Y * CellSize, CellSize, CellSize);
             }
-        }
 
-        public void MovementFigure(Keys key)
-        {
-            if (key == Keys.Left && IsPossibleMoveShapeInThisDirection(Square.X - 1, Square.Y))
-                Square.X--;
-
-            if (key == Keys.Right && IsPossibleMoveShapeInThisDirection(Square.X + 1, Square.Y))
-                Square.X++;
-
-            if (key == Keys.Down
-                && IsPossibleMoveShapeInThisDirection(Square.X, Square.Y + 1))
-                Square.Y++;
-
-            if (key == Keys.Space)
+            foreach (Point cell in SpecificFigure)
             {
-                while (IsPossibleMoveShapeInThisDirection(Square.X, Square.Y + 1))
-                    Square.Y++;
-                BusyCell.Add(new Point(Square.X, Square.Y));
-                Square.Y = -1;
+                graphiks.FillRectangle(Brushes.BlueViolet, cell.X * CellSize, cell.Y * CellSize, CellSize, CellSize);
             }
-
-            if (key == Keys.Up)
-                return;  
         }
+
+
 
         public bool IsPossibleMoveShapeInThisDirection(int x, int y)
         {
@@ -65,18 +77,19 @@ namespace Tetris
 
         public void Update()
         {
+            SpecificFigure = figure.RandomizationFigures();
             int lineСountingAndScoresDeduction = 0;
-            if (Square.Y == VerticalSizePlayingField - 1 || BusyCell.Contains(new Point(Square.X, Square.Y + 1)))
+            if (figure.Square.Y == VerticalSizePlayingField - 1 || BusyCell.Contains(new Point(figure.Square.X, figure.Square.Y + 1)))
             {
-                BusyCell.Add(new Point(Square.X, Square.Y));
-                Square.Y = -1;
+                BusyCell.Add(new Point(figure.Square.X, figure.Square.Y));
+                figure.Square.Y = -1;
             }
 
-            if (BusyCell.Contains(new Point(Square.X, Square.Y + 1)) && Square.Y < 1)
+            if (BusyCell.Contains(new Point(figure.Square.X, figure.Square.Y + 1)) && figure.Square.Y < 1)
             {
                 Score = 0;
                 BusyCell.Clear();
-                Square = new Point(HorizontalSizePlayingField / 2, -1);
+                figure.Square = new Point(HorizontalSizePlayingField / 2, -1);
                 Defeat();
             }
 
@@ -91,6 +104,8 @@ namespace Tetris
                     lineСountingAndScoresDeduction++;
                 }
             }
+
+
 
             switch (lineСountingAndScoresDeduction)
             {
@@ -111,7 +126,8 @@ namespace Tetris
                     break;
             }
             Score += lineСountingAndScoresDeduction;
-            Square.Y++;
+            figure.Square.Y++;
+
         }
     }
 }
