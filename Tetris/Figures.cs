@@ -9,16 +9,59 @@ namespace Tetris
 {
     class Figures
     {
-        public int StartingPointX = 12;
-        public int StartingPointY = 3;
+        public int OriginX = 12;
+        public int OriginY = 3;
         Random random = new Random();
-        public Point Square = new Point(Game.HorizontalSizePlayingField / 2, -1);
+        
+        private List<Point> FigureO()
+        {
+            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX+1, OriginY),
+                                      new Point(OriginX, OriginY-1), new Point(OriginX+1, OriginY-1)};
+        }
 
-        public List<Point> PointsFigure = new List<Point>();
+        private List<Point> FigureJ()
+        {
+            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
+                                      new Point(OriginX, OriginY-1), new Point(OriginX-1, OriginY+1)};
+        }
+
+        private List<Point> FigureL()
+        {
+            return  new List<Point>  {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
+                                      new Point(OriginX, OriginY-1), new Point(OriginX+1, OriginY+1)};
+        }
+        private List<Point> FigureS()
+        {
+            return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY-1),
+                                       new Point(OriginX+1, OriginY-1), new Point(OriginX-1, OriginY)};
+        }
+
+        private List<Point> FigureZ()
+        {
+            return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX+1, OriginY),
+                                       new Point(OriginX, OriginY-1), new Point(OriginX-1, OriginY-1)};
+        }
+
+        private List<Point> FigureT()
+        {
+           return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
+                                                         new Point(OriginX-1, OriginY), new Point(OriginX+1, OriginY)};
+        }
+
+        private List<Point> FigureI()
+        {
+            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX-1, OriginY),
+                                                         new Point(OriginX+1, OriginY), new Point(OriginX+2, OriginY)};
+        }
+
+        private List<Point> FigureSquare()
+        {
+            return  new List<Point>() { new Point(OriginX, OriginY) };
+        }
 
         public List<Point> RandomizationFigures()
         {
-            int randomFigure = random.Next(1, 8);
+            int randomFigure = random.Next(1, 9);
 
             switch (randomFigure)
             {
@@ -33,89 +76,10 @@ namespace Tetris
             }
         }
 
-        public List<Point> FigureO()
+        public void FiguresRotate()
         {
-            return PointsFigure = new List<Point>()
-            {
-               new Point(StartingPointX, StartingPointY),
-               new Point(StartingPointX+1, StartingPointY),
-               new Point(StartingPointX, StartingPointY-1),
-               new Point(StartingPointX+1, StartingPointY-1)
-            };
-        }
 
-        public List<Point> FigureJ()
-        {
-            return PointsFigure = new List<Point>()
-            {
-                new Point(StartingPointX, StartingPointY),
-             new Point(StartingPointX, StartingPointY+1),
-             new Point(StartingPointX, StartingPointY-1),
-             new Point(StartingPointX-1, StartingPointY+1)
-            };
-        }
 
-        public List<Point> FigureL()
-        {
-            return PointsFigure = new List<Point>()
-            {
-               new Point(StartingPointX, StartingPointY),
-               new Point(StartingPointX, StartingPointY+1),
-               new Point(StartingPointX, StartingPointY-1),
-               new Point(StartingPointX+1, StartingPointY+1)
-            };
-        }
-
-        public List<Point> FigureS()
-        {
-            return PointsFigure = new List<Point>()
-            {
-                new Point(StartingPointX, StartingPointY),
-                new Point(StartingPointX, StartingPointY-1),
-                new Point(StartingPointX+1, StartingPointY-1),
-                new Point(StartingPointX-1, StartingPointY)
-            };
-        }
-
-        public List<Point> FigureZ()
-        {
-            return PointsFigure = new List<Point>()
-            {
-                new Point(StartingPointX, StartingPointY),
-                new Point(StartingPointX+1, StartingPointY),
-                new Point(StartingPointX, StartingPointY-1),
-                new Point(StartingPointX-1, StartingPointY-1)
-            };
-        }
-
-        public List<Point> FigureT()
-        {
-            return PointsFigure = new List<Point>()
-            {
-                new Point(StartingPointX, StartingPointY),
-                new Point(StartingPointX, StartingPointY+1),
-                new Point(StartingPointX-1, StartingPointY),
-                new Point(StartingPointX+1, StartingPointY),
-            };
-        }
-
-        public List<Point> FigureI()
-        {
-            return PointsFigure = new List<Point>()
-            {
-                new Point(StartingPointX, StartingPointY),
-                new Point(StartingPointX-1, StartingPointY),
-                new Point(StartingPointX+1, StartingPointY),
-                new Point(StartingPointX+2, StartingPointY),
-            };
-        }
-
-        public List<Point> FigureSquare()
-        {
-            return PointsFigure = new List<Point>()
-            {
-               new Point(StartingPointX, StartingPointY)
-            };
         }
     }
 }

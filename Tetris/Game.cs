@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Drawing;
 using System.Linq;
+
 using System.Windows.Forms;
 
 namespace Tetris
@@ -15,33 +17,42 @@ namespace Tetris
         public List<Point> BusyCell = new List<Point>();
         public int Score = 0;
         public event Action Defeat;
-        public Figures figure = new Figures();
-        public List<Point> SpecificFigure = new List<Point>();
+        public static Figures figure = new Figures();
+        public static List<Point> NextFigure = figure.RandomizationFigures();
+        public List<Point> SpecificFigure = NextFigure.Select(x => new Point(x.X - 7, x.Y - 4)).ToList();
 
+        public void MovingFigureToGameField()
+        {
+            if (SpecificFigure.Count() == 0)
+                SpecificFigure = NextFigure.Select(x => new Point(x.X - 7, x.Y - 4)).ToList();
+
+            NextFigure = figure.RandomizationFigures();
+        }
 
         public void MovementFigure(Keys key)
         {
+            if (key == Keys.Left && SpecificFigure.All(x => IsPossibleMoveShapeInThisDirection(x.X - 1, x.Y)))
+                SpecificFigure = SpecificFigure.Select(x => new Point(x.X - 1, x.Y)).ToList();
 
-            if (key == Keys.Left && IsPossibleMoveShapeInThisDirection(figure.Square.X - 1, figure.Square.Y))
-                figure.Square.X--;
+            if (key == Keys.Right && SpecificFigure.All(x => IsPossibleMoveShapeInThisDirection(x.X + 1, x.Y)))
+                SpecificFigure = SpecificFigure.Select(x => new Point(x.X + 1, x.Y)).ToList();
 
-            if (key == Keys.Right && IsPossibleMoveShapeInThisDirection(figure.Square.X + 1, figure.Square.Y))
-                figure.Square.X++;
-
-            if (key == Keys.Down
-                && IsPossibleMoveShapeInThisDirection(figure.Square.X, figure.Square.Y + 1))
-                figure.Square.Y++;
+            if (key == Keys.Down && SpecificFigure.All(x => IsPossibleMoveShapeInThisDirection(x.X, x.Y + 1)))
+                SpecificFigure = SpecificFigure.Select(x => new Point(x.X, x.Y + 1)).ToList();
 
             if (key == Keys.Space)
             {
-                while (IsPossibleMoveShapeInThisDirection(figure.Square.X, figure.Square.Y + 1))
-                    figure.Square.Y++;
-                BusyCell.Add(new Point(figure.Square.X, figure.Square.Y));
-                figure.Square.Y = -1;
+                while (SpecificFigure.All(x => IsPossibleMoveShapeInThisDirection(x.X, x.Y + 1)))
+                    SpecificFigure = SpecificFigure.Select(x => new Point(x.X, x.Y + 1)).ToList();
             }
 
             if (key == Keys.Up)
-                return;
+            {
+                Point pivotPoint = SpecificFigure.First();
+                SpecificFigure = SpecificFigure.Select(point =>
+                                        new Point(point.X = point.Y - pivotPoint.Y + pivotPoint.X,
+                                        point.Y = point.X - point.X + point.Y)).ToList();
+            }
 
         }
 
@@ -55,20 +66,15 @@ namespace Tetris
                 graphiks.DrawLine(Pens.Black, i * CellSize, 0, i * CellSize, VerticalSizePlayingField * CellSize);
             }
 
-            graphiks.FillRectangle(Brushes.BlueViolet, figure.Square.X * CellSize, figure.Square.Y * CellSize, CellSize, CellSize);
-
             foreach (Point cell in BusyCell)
-            {
                 graphiks.FillRectangle(Brushes.BlueViolet, cell.X * CellSize, cell.Y * CellSize, CellSize, CellSize);
-            }
 
             foreach (Point cell in SpecificFigure)
-            {
                 graphiks.FillRectangle(Brushes.BlueViolet, cell.X * CellSize, cell.Y * CellSize, CellSize, CellSize);
-            }
+
+            foreach (Point cell in NextFigure)
+                graphiks.FillRectangle(Brushes.BlueViolet, cell.X * CellSize, cell.Y * CellSize, CellSize, CellSize);
         }
-
-
 
         public bool IsPossibleMoveShapeInThisDirection(int x, int y)
         {
@@ -77,20 +83,27 @@ namespace Tetris
 
         public void Update()
         {
-            SpecificFigure = figure.RandomizationFigures();
+
             int lineСountingAndScoresDeduction = 0;
-            if (figure.Square.Y == VerticalSizePlayingField - 1 || BusyCell.Contains(new Point(figure.Square.X, figure.Square.Y + 1)))
+
+            if (SpecificFigure.Where(x => x.Y == VerticalSizePlayingField - 1).Count() != 0 
+                || BusyCell.Intersect(SpecificFigure.Select(point=>new Point(point.X,point.Y+1))).Count()>0)
             {
-                BusyCell.Add(new Point(figure.Square.X, figure.Square.Y));
-                figure.Square.Y = -1;
+                BusyCell.AddRange(SpecificFigure);
+                SpecificFigure.Clear();
+                MovingFigureToGameField();
+                return;
             }
 
-            if (BusyCell.Contains(new Point(figure.Square.X, figure.Square.Y + 1)) && figure.Square.Y < 1)
+            if (BusyCell.Count() > 0 && 
+                BusyCell.Intersect(SpecificFigure.Select(point => new Point(point.X, point.Y + 1)))
+                .Contains(BusyCell.OrderBy(x => x.Y).First()))
             {
                 Score = 0;
-                BusyCell.Clear();
-                figure.Square = new Point(HorizontalSizePlayingField / 2, -1);
                 Defeat();
+                BusyCell.Clear();
+                SpecificFigure.Clear();
+                MovingFigureToGameField();
             }
 
             for (int i = 0; i < VerticalSizePlayingField; i++)
@@ -104,8 +117,6 @@ namespace Tetris
                     lineСountingAndScoresDeduction++;
                 }
             }
-
-
 
             switch (lineСountingAndScoresDeduction)
             {
@@ -126,8 +137,7 @@ namespace Tetris
                     break;
             }
             Score += lineСountingAndScoresDeduction;
-            figure.Square.Y++;
-
+            SpecificFigure = SpecificFigure.Select(x => new Point(x.X, x.Y + 1)).ToList();
         }
     }
 }
