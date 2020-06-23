@@ -7,59 +7,94 @@ using System.Threading.Tasks;
 
 namespace Tetris
 {
-    class Figures
+    class Figure
     {
         public int OriginX = 12;
         public int OriginY = 3;
         Random random = new Random();
-        
-        private List<Point> FigureO()
+
+        private Point[] FigureO()
         {
-            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX+1, OriginY),
-                                      new Point(OriginX, OriginY-1), new Point(OriginX+1, OriginY-1)};
+            return new[]
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX+1, OriginY),
+                new Point(OriginX, OriginY-1),
+                new Point(OriginX+1, OriginY-1)
+            };
         }
 
-        private List<Point> FigureJ()
+        private Point[] FigureJ()
         {
-            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
-                                      new Point(OriginX, OriginY-1), new Point(OriginX-1, OriginY+1)};
+            return new []
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX, OriginY+1),
+                new Point(OriginX, OriginY-1), 
+                new Point(OriginX-1, OriginY+1)
+            };
         }
 
-        private List<Point> FigureL()
+        private Point[] FigureL()
         {
-            return  new List<Point>  {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
-                                      new Point(OriginX, OriginY-1), new Point(OriginX+1, OriginY+1)};
-        }
-        private List<Point> FigureS()
-        {
-            return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY-1),
-                                       new Point(OriginX+1, OriginY-1), new Point(OriginX-1, OriginY)};
-        }
-
-        private List<Point> FigureZ()
-        {
-            return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX+1, OriginY),
-                                       new Point(OriginX, OriginY-1), new Point(OriginX-1, OriginY-1)};
+            return new[]
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX, OriginY+1),
+                new Point(OriginX, OriginY-1),
+                new Point(OriginX+1, OriginY+1)
+            };
         }
 
-        private List<Point> FigureT()
+        private Point[] FigureS()
         {
-           return  new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX, OriginY+1),
-                                                         new Point(OriginX-1, OriginY), new Point(OriginX+1, OriginY)};
+            return new []
+            {
+                new Point(OriginX, OriginY), 
+                new Point(OriginX, OriginY-1),
+                new Point(OriginX+1, OriginY-1),
+                new Point(OriginX-1, OriginY)};
         }
 
-        private List<Point> FigureI()
+        private Point[] FigureZ()
         {
-            return new List<Point>() {new Point(OriginX, OriginY), new Point(OriginX-1, OriginY),
-                                                         new Point(OriginX+1, OriginY), new Point(OriginX+2, OriginY)};
+            return new []
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX+1, OriginY),
+                new Point(OriginX, OriginY-1),
+                new Point(OriginX-1, OriginY-1)
+            };
         }
 
-        private List<Point> FigureSquare()
+        private Point[] FigureT()
         {
-            return  new List<Point>() { new Point(OriginX, OriginY) };
+            return new [] 
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX, OriginY+1),
+                new Point(OriginX-1, OriginY),
+                new Point(OriginX+1, OriginY)
+            };
         }
 
-        public List<Point> RandomizationFigures()
+        private Point[] FigureI()
+        {
+            return new [] 
+            {
+                new Point(OriginX, OriginY),
+                new Point(OriginX-1, OriginY),
+                new Point(OriginX+1, OriginY),
+                new Point(OriginX+2, OriginY)
+            };
+        }
+
+        private Point[] FigureSquare()
+        {
+            return new [] { new Point(OriginX, OriginY) };
+        }
+
+        public Point[] CreateRandomFigure()
         {
             int randomFigure = random.Next(1, 9);
 
@@ -72,14 +107,9 @@ namespace Tetris
                 case 5: return FigureZ();
                 case 6: return FigureT();
                 case 7: return FigureI();
-                default: return FigureSquare();
+                case 8: return FigureSquare();
+                default: throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public void FiguresRotate()
-        {
-
-
         }
     }
 }
