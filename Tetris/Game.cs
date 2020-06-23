@@ -16,37 +16,39 @@ namespace Tetris
         private const int gameFieldHeight = 20;
         private int cellSize = 25;
         private List<Point> busyCells = new List<Point>();
-        private static Figure figure = new Figure();
-        private static Point[] nextFigure = figure.CreateRandomFigure();
-        private Point[] specificFigure = nextFigure.Select(x => new Point(x.X - 7, x.Y - 4)).ToArray();
+        
+        private static Figure nextFigure = Figure.CreateRandomFigure();
+        private static Figure specificFigure = nextFigure;
 
         public void MovingFigureToGameField()
         {
-            specificFigure = nextFigure.Select(x => new Point(x.X - 7, x.Y - 4)).ToArray();
-            nextFigure = figure.CreateRandomFigure();
+            specificFigure = nextFigure;
+            specificFigure.Points = nextFigure.Points.Select(x => new Point(x.X - 7, x.Y - 4)).ToArray();
+            nextFigure = Figure.CreateRandomFigure();
         }
+
 
         public void MovementFigure(Keys key)
         {
-            if (key == Keys.Left && specificFigure.All(x => IsPossibleMoveFigure(x.X - 1, x.Y)))
-                specificFigure = specificFigure.Select(x => new Point(x.X - 1, x.Y)).ToArray();
+            if (key == Keys.Left && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X - 1, x.Y)))
+                specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X - 1, x.Y)).ToArray();
 
-            if (key == Keys.Right && specificFigure.All(x => IsPossibleMoveFigure(x.X + 1, x.Y)))
-                specificFigure = specificFigure.Select(x => new Point(x.X + 1, x.Y)).ToArray();
+            if (key == Keys.Right && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X + 1, x.Y)))
+                specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X + 1, x.Y)).ToArray();
 
-            if (key == Keys.Down && specificFigure.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
-                specificFigure = specificFigure.Select(x => new Point(x.X, x.Y + 1)).ToArray();
+            if (key == Keys.Down && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
+                specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
 
             if (key == Keys.Space)
             {
-                while (specificFigure.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
-                    specificFigure = specificFigure.Select(x => new Point(x.X, x.Y + 1)).ToArray();
+                while (specificFigure.Points.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
+                    specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
             }
 
             if (key == Keys.Up)
             {
-                Point pivotPoint = specificFigure.First();
-                specificFigure = specificFigure.Select(point =>
+                Point pivotPoint = specificFigure.Points.First();
+                specificFigure.Points = specificFigure.Points.Select(point =>
                 new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
                   pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
             }
@@ -65,10 +67,10 @@ namespace Tetris
             foreach (Point cell in busyCells)
                 graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
 
-            foreach (Point cell in specificFigure)
+            foreach (Point cell in specificFigure.Points)
                 graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
 
-            foreach (Point cell in nextFigure)
+            foreach (Point cell in nextFigure.Points)
                 graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
         }
 
@@ -79,19 +81,18 @@ namespace Tetris
 
         public void Update()
         {
-
             int lineСountingAndScoresDeduction = 0;
-
-            if (specificFigure.Where(x => x.Y == gameFieldHeight - 1).Count() != 0
-                || busyCells.Intersect(specificFigure.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)
+            
+            if (specificFigure.Points.Where(x => x.Y == gameFieldHeight - 1).Count() != 0
+                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)
             {
-                busyCells.AddRange(specificFigure);
+                busyCells.AddRange(specificFigure.Points);
                 MovingFigureToGameField();
                 return;
             }
 
             if (busyCells.Count() > 0 &&
-                busyCells.Intersect(specificFigure.Select(point => new Point(point.X, point.Y + 1)))
+                busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1)))
                 .Contains(busyCells.OrderBy(x => x.Y).First()))
             {
                 Score = 0;
@@ -132,7 +133,7 @@ namespace Tetris
                 default: throw new ArgumentOutOfRangeException();
             }
             Score += lineСountingAndScoresDeduction;
-            specificFigure = specificFigure.Select(x => new Point(x.X, x.Y + 1)).ToArray();
+            specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
         }
     }
 }
