@@ -27,7 +27,7 @@ namespace Tetris
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            game.MovementFigure(e.KeyCode);
+            game.MoveFigure(e.KeyCode);
             pictureBox1.Refresh();
         }
 

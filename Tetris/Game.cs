@@ -16,9 +16,10 @@ namespace Tetris
         private const int gameFieldHeight = 20;
         private int cellSize = 25;
         private List<Point> busyCells = new List<Point>();
-        
         private static Figure nextFigure = Figure.CreateRandomFigure();
         private static Figure specificFigure = nextFigure;
+
+                   
 
         public void MovingFigureToGameField()
         {
@@ -28,8 +29,10 @@ namespace Tetris
         }
 
 
-        public void MovementFigure(Keys key)
+        public void MoveFigure(Keys key)
         {
+
+
             if (key == Keys.Left && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X - 1, x.Y)))
                 specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X - 1, x.Y)).ToArray();
 
@@ -48,9 +51,28 @@ namespace Tetris
             if (key == Keys.Up)
             {
                 Point pivotPoint = specificFigure.Points.First();
-                specificFigure.Points = specificFigure.Points.Select(point =>
-                new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
-                  pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
+                if (specificFigure.FigureType == FigureType.O || specificFigure.FigureType == FigureType.Square)
+                    return;
+                else if (specificFigure.FigureType == FigureType.I
+                    || specificFigure.FigureType == FigureType.S
+                    || specificFigure.FigureType == FigureType.Z)
+                    if (specificFigure.Points[1].Y == specificFigure.Points[2].Y)
+                        specificFigure.Points = specificFigure.Points.Select(point =>
+                        new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
+                          pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
+                    else
+                    {
+                        specificFigure.Points = specificFigure.Points.Select(point =>
+                        new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
+                          pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
+                    }
+
+                else
+
+                    specificFigure.Points = specificFigure.Points.Select(point =>
+                    new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
+                      pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
+                
             }
 
         }
@@ -82,13 +104,15 @@ namespace Tetris
         public void Update()
         {
             int lineСountingAndScoresDeduction = 0;
-            
+            if (specificFigure.Points.First() == new Point(Figure.OriginX, Figure.OriginY))
+                MovingFigureToGameField();
+
             if (specificFigure.Points.Where(x => x.Y == gameFieldHeight - 1).Count() != 0
-                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)
+                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)  
             {
                 busyCells.AddRange(specificFigure.Points);
-                MovingFigureToGameField();
-                return;
+                    MovingFigureToGameField();
+                    return;
             }
 
             if (busyCells.Count() > 0 &&
