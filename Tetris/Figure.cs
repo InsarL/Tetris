@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,11 +11,14 @@ namespace Tetris
 {
     class Figure
     {
-        public static int OriginX = 12;
-        public static int OriginY = 3;
-        public FigureType FigureType;
-        public Point[] Points;
-        private static Random random = new Random();
+        public int X;
+        public int Y;
+        public static int OriginX=12;
+        public static int OriginY=4;
+        public  FigureType FigureType;
+        public  Point[] Points;
+        private static Random random = new Random();    
+
 
         public Figure(FigureType figureType, Point[] points)
         {
@@ -100,7 +105,7 @@ namespace Tetris
 
         private static Figure FigureSquare()
         {
-            return new Figure(FigureType.Square, new[] { new Point(OriginX, OriginY)});
+            return new Figure(FigureType.Square, new[] { new Point(OriginX, OriginY) });
         }
 
         public static Figure CreateRandomFigure()
@@ -117,6 +122,23 @@ namespace Tetris
                 case 8: return FigureSquare();
                 default: throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public Point[] RotateClockwise()
+        {
+            Point pivotPoint = Points.First();
+            return Points = Points.Select(point =>
+                           new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
+                             pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
+        }
+
+        public Point[] RotateCounterClockwise()
+        {
+            Point pivotPoint = Points.First();
+
+            return Points = Points.Select(point =>
+                           new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
+                             pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Deployment.Application;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -12,19 +13,17 @@ namespace Tetris
     {
         public int Score = 0;
         public event Action Defeat;
-        private const int gameFieldWidth = 10;
-        private const int gameFieldHeight = 20;
+        public const int gameFieldWidth = 10;
+        public const int gameFieldHeight = 20;
         private int cellSize = 25;
         private List<Point> busyCells = new List<Point>();
         private static Figure nextFigure = Figure.CreateRandomFigure();
-        private static Figure specificFigure = nextFigure;
-
-                   
+        public Figure specificFigure = nextFigure;
 
         public void MovingFigureToGameField()
         {
             specificFigure = nextFigure;
-            specificFigure.Points = nextFigure.Points.Select(x => new Point(x.X - 7, x.Y - 4)).ToArray();
+            specificFigure.Points = nextFigure.Points.Select(point => new Point(point.X - 7, point.Y - 4)).ToArray();
             nextFigure = Figure.CreateRandomFigure();
         }
 
@@ -50,29 +49,28 @@ namespace Tetris
 
             if (key == Keys.Up)
             {
-                Point pivotPoint = specificFigure.Points.First();
-                if (specificFigure.FigureType == FigureType.O || specificFigure.FigureType == FigureType.Square)
-                    return;
-                else if (specificFigure.FigureType == FigureType.I
-                    || specificFigure.FigureType == FigureType.S
-                    || specificFigure.FigureType == FigureType.Z)
-                    if (specificFigure.Points[1].Y == specificFigure.Points[2].Y)
-                        specificFigure.Points = specificFigure.Points.Select(point =>
-                        new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
-                          pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
-                    else
-                    {
-                        specificFigure.Points = specificFigure.Points.Select(point =>
-                        new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
-                          pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
-                    }
+                switch (specificFigure.FigureType)
+                {
+                    case FigureType.O:
+                    case FigureType.Square:
+                        return;
 
-                else
+                    case FigureType.I:
+                    case FigureType.S:
+                    case FigureType.Z:
+                        if (specificFigure.Points[1].Y == specificFigure.Points[2].Y)
+                            specificFigure.RotateClockwise();
+                        else
+                            specificFigure.RotateCounterClockwise();
+                            break;
 
-                    specificFigure.Points = specificFigure.Points.Select(point =>
-                    new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
-                      pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
-                
+                    case FigureType.J:
+                    case FigureType.L:
+                    case FigureType.T:
+                        specificFigure.RotateClockwise();
+
+                        break;
+                }
             }
 
         }
@@ -108,11 +106,11 @@ namespace Tetris
                 MovingFigureToGameField();
 
             if (specificFigure.Points.Where(x => x.Y == gameFieldHeight - 1).Count() != 0
-                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)  
+                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)
             {
                 busyCells.AddRange(specificFigure.Points);
-                    MovingFigureToGameField();
-                    return;
+                MovingFigureToGameField();
+                return;
             }
 
             if (busyCells.Count() > 0 &&
