@@ -13,7 +13,7 @@ namespace Tetris
     {
         public int X;
         public int Y;
-        public FigureType FigureType;
+        private FigureType FigureType;
         public  Point[] Points;
 
         public Figure(FigureType figureType, params Point[] points)
@@ -54,19 +54,19 @@ namespace Tetris
             }
         }
 
-        private  Point[] RotateClockwise()
+        private void RotateClockwise()
         {
             Point pivotPoint = Points.First();
-            return Points = Points.Select(point =>
+             Points = Points.Select(point =>
                            new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
                              pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
         }
 
-        private Point[] RotateCounterClockwise()
+        private void RotateCounterClockwise()
         {
             Point pivotPoint = Points.First();
 
-            return Points = Points.Select(point =>
+             Points = Points.Select(point =>
                            new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
                              pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
         }

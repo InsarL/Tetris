@@ -26,30 +26,40 @@ namespace Tetris
             Score = 0;
             nextFigure = FigureFactory.CreateRandomFigure();
             specificFigure = nextFigure;
-            MovingFigureToGameField();
+            AddNextFigure();
         }
 
-        public void MovingFigureToGameField()
+        public void AddNextFigure()
         {
             specificFigure = nextFigure;
-            specificFigure.Points = nextFigure.Points.Select(point => new Point(point.X - 7, point.Y - 4)).ToArray();
+            specificFigure.Points = nextFigure.Points.Select(point => new Point(point.X - 7, point.Y - 1)).ToArray();
             nextFigure = FigureFactory.CreateRandomFigure();
+        }
+
+        public bool IsFreeCell(int x, int y)
+        {
+            return x < gameFieldWidth && y < gameFieldHeight && x >= 0 && y >= 0 && !busyCells.Contains(new Point(x, y));
+        }
+
+        bool IsPossibleMoveFigure(Figure figure, int offsetX, int offsetY)
+        {
+            return specificFigure.Points.All(points =>  IsFreeCell(points.X + offsetX, points.Y + offsetY));
         }
 
         public void MoveFigure(Keys key)
         {
-            if (key == Keys.Left && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X - 1, x.Y)))
+            if (key == Keys.Left && IsPossibleMoveFigure(specificFigure, specificFigure.X-1, specificFigure.Y))
                 specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X - 1, x.Y)).ToArray();
 
-            if (key == Keys.Right && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X + 1, x.Y)))
+            if (key == Keys.Right && IsPossibleMoveFigure(specificFigure, specificFigure.X + 1, specificFigure.Y))
                 specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X + 1, x.Y)).ToArray();
 
-            if (key == Keys.Down && specificFigure.Points.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
+            if (key == Keys.Down && IsPossibleMoveFigure(specificFigure, specificFigure.X - 1, specificFigure.Y + 1))
                 specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
 
             if (key == Keys.Space)
             {
-                while (specificFigure.Points.All(x => IsPossibleMoveFigure(x.X, x.Y + 1)))
+                while (specificFigure.Points.All(x => IsFreeCell(x.X, x.Y + 1)))
                     specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
             }
 
@@ -77,21 +87,17 @@ namespace Tetris
 
         }
 
-        public bool IsPossibleMoveFigure(int x, int y)
-        {
-            return x < gameFieldWidth && y < gameFieldHeight && x >= 0 && y >= 0 && !busyCells.Contains(new Point(x, y));
-        }
+
 
         private int CalculateScore(int lines)
         {
-
             switch (lines)
             {
-                case 0: return Score += 0;
-                case 1: return Score += 100;
-                case 2: return Score += 300;
-                case 3: return Score += 700;
-                case 4: return Score += 1500;
+                case 0: return 0;
+                case 1: return 100;
+                case 2: return 300;
+                case 3: return 700;
+                case 4: return 1500;
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -99,32 +105,32 @@ namespace Tetris
         public void Update()
         {
             if (specificFigure.Points.First() == new Point(FigureFactory.OriginX, FigureFactory.OriginY))
-                MovingFigureToGameField();
+                AddNextFigure();
 
-            if (specificFigure.Points.Where(x => x.Y == gameFieldHeight - 1).Count() != 0
-                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Count() > 0)
+            if (specificFigure.Points.Any(x => x.Y == gameFieldHeight - 1)
+                || busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1))).Any())
             {
                 busyCells.AddRange(specificFigure.Points);
-                MovingFigureToGameField();
+                AddNextFigure();
                 return;
             }
 
-            if (busyCells.Count() > 0 &&
-                busyCells.Intersect(specificFigure.Points.Select(point => new Point(point.X, point.Y + 1)))
-                .Contains(busyCells.OrderBy(x => x.Y).First()))
+            if (specificFigure.Points.Intersect(busyCells).Any())
                 Defeat();
 
             int lines = 0;
             for (int i = 0; i < gameFieldHeight; i++)
                 if (busyCells.Count(x => x.Y == i) == gameFieldWidth)
                 {
-                    List<Point> cellsUp = new List<Point>();
-                    cellsUp = busyCells.Where(x => x.Y < i).Select(point => new Point(point.X, point.Y + 1)).ToList();
+                    Point[] cellsUp = busyCells
+                        .Where(x => x.Y < i)
+                        .Select(point => new Point(point.X, point.Y + 1))
+                        .ToArray();
                     busyCells.RemoveAll(x => x.Y <= i);
                     busyCells.AddRange(cellsUp);
                     lines++;
                 }
-            CalculateScore(lines);
+            Score += CalculateScore(lines);
             specificFigure.Points = specificFigure.Points.Select(x => new Point(x.X, x.Y + 1)).ToArray();
         }
     }

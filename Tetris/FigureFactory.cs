@@ -7,13 +7,13 @@ using System.Drawing;
 
 namespace Tetris
 {
-    class FigureFactory
+    static class FigureFactory
     {
         public static int OriginX = 12;
         public static int OriginY = 4;
         private static Random random = new Random();
 
-        private static Figure FigureO()
+        private  static Figure FigureO()
         {
             return new Figure(FigureType.O, new[]
             {
