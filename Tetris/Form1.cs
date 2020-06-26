@@ -11,6 +11,7 @@ namespace Tetris
             InitializeComponent();
             game = new Game();
             game.Defeat += OnDefeat;
+            game.Restart();
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -36,6 +37,7 @@ namespace Tetris
             timer1.Stop();
             pictureBox1.Refresh();
             MessageBox.Show("Game Over");
+            game.Restart();
             timer1.Start();
         }
     }
