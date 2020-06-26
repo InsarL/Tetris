@@ -9,90 +9,46 @@ namespace Tetris
 {
     static class FigureFactory
     {
-        public static int OriginX = 12;
-        public static int OriginY = 4;
         private static Random random = new Random();
 
-        private  static Figure FigureO()
+        private static Figure FigureO()
         {
-            return new Figure(FigureType.O, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX+1, OriginY),
-                new Point(OriginX, OriginY-1),
-                new Point(OriginX+1, OriginY-1)
-            });
+            return new Figure(FigureType.O, new Point(0, 0),    new Point(1, 0),  new Point(0, -1),  new Point(1, -1));
         }
 
         private static Figure FigureJ()
         {
-            return new Figure(FigureType.J, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX, OriginY+1),
-                new Point(OriginX, OriginY-1),
-                new Point(OriginX-1, OriginY+1)
-            });
+            return new Figure(FigureType.J,  new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(-1, 1));
         }
 
         private static Figure FigureL()
         {
-            return new Figure(FigureType.L, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX, OriginY+1),
-                new Point(OriginX, OriginY-1),
-                new Point(OriginX+1, OriginY+1)
-            });
+            return new Figure(FigureType.L, new Point(0, 0), new Point(0, 1),  new Point(0, -1),new Point(1, 1));
         }
 
         private static Figure FigureS()
         {
-            return new Figure(FigureType.S, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX, OriginY-1),
-                new Point(OriginX+1, OriginY-1),
-                new Point(OriginX-1, OriginY)
-            });
+            return new Figure(FigureType.S, new Point(0, 0), new Point(0, -1),new Point(1, -1), new Point(-1, 0));
         }
 
         private static Figure FigureZ()
         {
-            return new Figure(FigureType.Z, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX+1, OriginY),
-                new Point(OriginX, OriginY-1),
-                new Point(OriginX-1, OriginY-1)
-            });
+            return new Figure(FigureType.Z, new Point(0, 0), new Point(1, 0),new Point(0, -1), new Point(-1, -1));
         }
 
         private static Figure FigureT()
         {
-            return new Figure(FigureType.T, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX, OriginY+1),
-                new Point(OriginX-1, OriginY),
-                new Point(OriginX+1, OriginY)
-            });
+            return new Figure(FigureType.T, new Point(0, 0), new Point(0, 1), new Point(-1, 0), new Point(1, 0));
         }
 
         private static Figure FigureI()
         {
-            return new Figure(FigureType.I, new[]
-            {
-                new Point(OriginX, OriginY),
-                new Point(OriginX-1, OriginY),
-                new Point(OriginX+1, OriginY),
-                new Point(OriginX+2, OriginY)
-            });
+            return new Figure(FigureType.I, new Point(0, 0), new Point(-1, 0), new Point(1, 0), new Point(2, 0));
         }
 
         private static Figure FigureSquare()
         {
-            return new Figure(FigureType.Square, new[] { new Point(OriginX, OriginY) });
+            return new Figure(FigureType.Square, new Point(0, 0));
         }
 
         public static Figure CreateRandomFigure()

@@ -11,21 +11,23 @@ namespace Tetris
 {
     class Figure
     {
-        public int X;
-        public int Y;
+        public int X = 12;
+        public int Y = 4;
         private FigureType FigureType;
-        public  Point[] Points;
+        public  Point[] PointOnGameField;
+        private Point[] points;
+        public Point[] PointsOnGameField => points.Select(point => new Point(point.X + X, point.Y + Y)).ToArray();
 
         public Figure(FigureType figureType, params Point[] points)
         {
             FigureType = figureType;
-            Points = points;
+            PointOnGameField = points;
         }
 
         public void Draw(Graphics graphics, int cellSize)
         {
             
-            foreach (Point cell in Points)
+            foreach (Point cell in PointOnGameField)
               graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
         }
 
@@ -40,7 +42,7 @@ namespace Tetris
                 case FigureType.I:
                 case FigureType.S:
                 case FigureType.Z:
-                    if (Points[1].Y == Points[2].Y)
+                    if (PointOnGameField[1].Y == PointOnGameField[2].Y)
                         RotateClockwise();
                     else
                         RotateCounterClockwise();
@@ -56,17 +58,17 @@ namespace Tetris
 
         private void RotateClockwise()
         {
-            Point pivotPoint = Points.First();
-             Points = Points.Select(point =>
+            Point pivotPoint = PointOnGameField.First();
+             PointOnGameField = PointOnGameField.Select(point =>
                            new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
                              pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
         }
 
         private void RotateCounterClockwise()
         {
-            Point pivotPoint = Points.First();
+            Point pivotPoint = PointOnGameField.First();
 
-             Points = Points.Select(point =>
+             PointOnGameField = PointOnGameField.Select(point =>
                            new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
                              pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
         }
