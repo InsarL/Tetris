@@ -14,20 +14,19 @@ namespace Tetris
         public int X = 12;
         public int Y = 4;
         private FigureType FigureType;
-        public  Point[] PointOnGameField;
         private Point[] points;
         public Point[] PointsOnGameField => points.Select(point => new Point(point.X + X, point.Y + Y)).ToArray();
 
         public Figure(FigureType figureType, params Point[] points)
         {
             FigureType = figureType;
-            PointOnGameField = points;
+            this.points = points;
         }
 
         public void Draw(Graphics graphics, int cellSize)
         {
             
-            foreach (Point cell in PointOnGameField)
+            foreach (Point cell in PointsOnGameField)
               graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
         }
 
@@ -42,7 +41,7 @@ namespace Tetris
                 case FigureType.I:
                 case FigureType.S:
                 case FigureType.Z:
-                    if (PointOnGameField[1].Y == PointOnGameField[2].Y)
+                    if (points[1].Y == points[2].Y)
                         RotateClockwise();
                     else
                         RotateCounterClockwise();
@@ -58,17 +57,17 @@ namespace Tetris
 
         private void RotateClockwise()
         {
-            Point pivotPoint = PointOnGameField.First();
-             PointOnGameField = PointOnGameField.Select(point =>
+            Point pivotPoint = points.First();
+             points = points.Select(point =>
                            new Point(pivotPoint.X + (pivotPoint.Y - point.Y),
                              pivotPoint.Y + (point.X - pivotPoint.X))).ToArray();
         }
 
         private void RotateCounterClockwise()
         {
-            Point pivotPoint = PointOnGameField.First();
+            Point pivotPoint = PointsOnGameField.First();
 
-             PointOnGameField = PointOnGameField.Select(point =>
+             points = PointsOnGameField.Select(point =>
                            new Point(pivotPoint.X + (point.Y - pivotPoint.Y),
                              pivotPoint.Y + (pivotPoint.X - point.X))).ToArray();
         }

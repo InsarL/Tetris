@@ -13,27 +13,27 @@ namespace Tetris
 
         private static Figure FigureO()
         {
-            return new Figure(FigureType.O, new Point(0, 0),    new Point(1, 0),  new Point(0, -1),  new Point(1, -1));
+            return new Figure(FigureType.O, new Point(0, 0), new Point(1, 0), new Point(0, -1), new Point(1, -1));
         }
 
         private static Figure FigureJ()
         {
-            return new Figure(FigureType.J,  new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(-1, 1));
+            return new Figure(FigureType.J, new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(-1, 1));
         }
 
         private static Figure FigureL()
         {
-            return new Figure(FigureType.L, new Point(0, 0), new Point(0, 1),  new Point(0, -1),new Point(1, 1));
+            return new Figure(FigureType.L, new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(1, 1));
         }
 
         private static Figure FigureS()
         {
-            return new Figure(FigureType.S, new Point(0, 0), new Point(0, -1),new Point(1, -1), new Point(-1, 0));
+            return new Figure(FigureType.S, new Point(0, 0), new Point(0, -1), new Point(1, -1), new Point(-1, 0));
         }
 
         private static Figure FigureZ()
         {
-            return new Figure(FigureType.Z, new Point(0, 0), new Point(1, 0),new Point(0, -1), new Point(-1, -1));
+            return new Figure(FigureType.Z, new Point(0, 0), new Point(1, 0), new Point(0, -1), new Point(-1, -1));
         }
 
         private static Figure FigureT()
