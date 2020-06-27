@@ -17,12 +17,12 @@ namespace Tetris
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             game.Draw(e.Graphics);
-            label1.Text = "Очки:" + game.Score;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             game.Update();
+            label1.Text = "Счёт:" + game.Score;
             pictureBox1.Refresh();
         }
 

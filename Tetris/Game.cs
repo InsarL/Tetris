@@ -13,12 +13,12 @@ namespace Tetris
     {
         public int Score;
         public event Action Defeat;
-        public const int gameFieldWidth = 10;
-        public const int gameFieldHeight = 20;
+        private const int gameFieldWidth = 10;
+        private const int gameFieldHeight = 20;
         private const int cellSize = 25;
         private List<Point> busyCells = new List<Point>();
         private Figure nextFigure;
-        private Figure specificFigure;
+        private Figure currentFigure;
 
         public void Restart()
         {
@@ -30,12 +30,12 @@ namespace Tetris
 
         private void AddNextFigure()
         {
-            specificFigure = nextFigure;
-            specificFigure.X = 5;
-            specificFigure.Y = 2;
+            currentFigure = nextFigure;
+            currentFigure.X = 5;
+            currentFigure.Y = 2;
             nextFigure = FigureFactory.CreateRandomFigure();
 
-            if (!IsPossibleMoveFigure(specificFigure, 0, 0))
+            if (!IsPossibleMoveFigure(currentFigure, 0, 0))
                 Defeat();
         }
 
@@ -51,23 +51,25 @@ namespace Tetris
 
         public void MoveFigure(Keys key)
         {
-            if (key == Keys.Left && IsPossibleMoveFigure(specificFigure, -1, 0))
-                specificFigure.X--;
+            if (key == Keys.Left && IsPossibleMoveFigure(currentFigure, -1, 0))
+                currentFigure.X--;
 
-            if (key == Keys.Right && IsPossibleMoveFigure(specificFigure, 1, 0))
-                specificFigure.X++;
+            if (key == Keys.Right && IsPossibleMoveFigure(currentFigure, 1, 0))
+                currentFigure.X++;
 
-            if (key == Keys.Down && IsPossibleMoveFigure(specificFigure, 0, 1))
-                specificFigure.Y++;
+            if (key == Keys.Down && IsPossibleMoveFigure(currentFigure, 0, 1))
+                currentFigure.Y++;
+
             if (key == Keys.Space)
             {
-                while (IsPossibleMoveFigure(specificFigure, 0, 1))
-                    specificFigure.Y++;
+                while (IsPossibleMoveFigure(currentFigure, 0, 1))
+                    currentFigure.Y++;
             }
 
             if (key == Keys.Up)
             {
-                specificFigure.Rotate();
+                if (IsPossibleMoveFigure(currentFigure.Rotate(currentFigure), 0, 0))
+                    currentFigure.Rotate(currentFigure);
             }
 
         }
@@ -80,16 +82,12 @@ namespace Tetris
             for (int i = 0; i <= gameFieldHeight; i++)
                 graphics.DrawLine(Pens.Black, 0, i * cellSize, gameFieldWidth * cellSize, i * cellSize);
 
-            specificFigure.Draw(graphics, cellSize);
+            currentFigure.Draw(graphics, cellSize);
             nextFigure.Draw(graphics, cellSize);
 
             foreach (Point cell in busyCells)
                 graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
-
-
         }
-
-
 
         private int CalculateScore(int lines)
         {
@@ -106,29 +104,31 @@ namespace Tetris
 
         public void Update()
         {
+            
 
-            if (specificFigure.PointsOnGameField.Any(x => x.Y == gameFieldHeight - 1)
-                || busyCells.Intersect(specificFigure.PointsOnGameField.Select(point => new Point(point.X, point.Y + 1))).Any())
+            if (currentFigure.PointsOnGameField.Any(x => x.Y == gameFieldHeight - 1)
+                || !IsPossibleMoveFigure(currentFigure, 0, 1))
             {
-                busyCells.AddRange(specificFigure.PointsOnGameField);
+                busyCells.AddRange(currentFigure.PointsOnGameField);
+                
+                int lines = 0;
+                for (int i = 0; i < gameFieldHeight; i++)
+                    if (busyCells.Count(x => x.Y == i) == gameFieldWidth)
+                    {
+                        Point[] cellsUp = busyCells
+                            .Where(x => x.Y < i)
+                            .Select(point => new Point(point.X, point.Y + 1))
+                            .ToArray();
+                        busyCells.RemoveAll(x => x.Y <= i);
+                        busyCells.AddRange(cellsUp);
+                        
+                        lines++;
+                    }
+                Score += CalculateScore(lines);
                 AddNextFigure();
-                return;
             }
 
-            int lines = 0;
-            for (int i = 0; i < gameFieldHeight; i++)
-                if (busyCells.Count(x => x.Y == i) == gameFieldWidth)
-                {
-                    Point[] cellsUp = busyCells
-                        .Where(x => x.Y < i)
-                        .Select(point => new Point(point.X, point.Y + 1))
-                        .ToArray();
-                    busyCells.RemoveAll(x => x.Y <= i);
-                    busyCells.AddRange(cellsUp);
-                    lines++;
-                }
-            Score += CalculateScore(lines);
-            specificFigure.Y++;
+            currentFigure.Y++;
         }
     }
 }
