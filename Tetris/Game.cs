@@ -49,7 +49,9 @@ namespace Tetris
             {
                 busyCells.AddRange(currentFigure.PointsOnGameField);
 
-                Score += CalculateScore();
+                int countRemovedLines = RemoveFullLines();
+
+                Score += CalculateScore(countRemovedLines);
 
                 AddNextFigure();
             }
@@ -114,9 +116,9 @@ namespace Tetris
             return x < gameFieldWidth && y < gameFieldHeight && x >= 0 && y >= 0 && !busyCells.Contains(new Point(x, y));
         }
 
-        private int CalculateScore()
+        private int CalculateScore(int countRemovedLines)
         {
-            switch (RemoveFullLines())
+            switch (countRemovedLines)
             {
                 case 0: return 0;
                 case 1: return 100;
