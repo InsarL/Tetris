@@ -3,10 +3,10 @@ using System.Windows.Forms;
 
 namespace Tetris
 {
-    public partial class Form1 : Form
+    public partial class Tetris : Form
     {
         private Game game;
-        public Form1()
+        public Tetris()
         {
             InitializeComponent();
             game = new Game();
@@ -22,7 +22,7 @@ namespace Tetris
         private void timer1_Tick(object sender, EventArgs e)
         {
             game.Update();
-            label1.Text = "Счёт:" + game.Score;
+            labelScore.Text = "Счёт:" + game.Score;
             pictureBox1.Refresh();
         }
 

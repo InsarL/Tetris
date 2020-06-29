@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace Tetris
@@ -10,6 +6,22 @@ namespace Tetris
     static class FigureFactory
     {
         private static Random random = new Random();
+
+        public static Figure CreateRandomFigure()
+        {
+            switch (random.Next(1, 9))
+            {
+                case 1: return FigureO();
+                case 2: return FigureJ();
+                case 3: return FigureL();
+                case 4: return FigureS();
+                case 5: return FigureZ();
+                case 6: return FigureT();
+                case 7: return FigureI();
+                case 8: return FigureSquare();
+                default: throw new ArgumentOutOfRangeException();
+            }
+        }
 
         private static Figure FigureO()
         {
@@ -49,22 +61,6 @@ namespace Tetris
         private static Figure FigureSquare()
         {
             return new Figure(FigureType.Square, new Point(0, 0));
-        }
-
-        public static Figure CreateRandomFigure()
-        {
-            switch (random.Next(1, 9))
-            {
-                case 1: return FigureO();
-                case 2: return FigureJ();
-                case 3: return FigureL();
-                case 4: return FigureS();
-                case 5: return FigureZ();
-                case 6: return FigureT();
-                case 7: return FigureI();
-                case 8: return FigureSquare();
-                default: throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }

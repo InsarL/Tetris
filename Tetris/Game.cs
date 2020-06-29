@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Deployment.Application;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Tetris
@@ -25,28 +22,37 @@ namespace Tetris
             busyCells.Clear();
             Score = 0;
             nextFigure = FigureFactory.CreateRandomFigure();
+
             AddNextFigure();
         }
 
-        private void AddNextFigure()
+        public void Draw(Graphics graphics)
         {
-            currentFigure = nextFigure;
-            currentFigure.X = 5;
-            currentFigure.Y = 2;
-            nextFigure = FigureFactory.CreateRandomFigure();
+            for (int i = 0; i <= gameFieldWidth; i++)
+                graphics.DrawLine(Pens.Black, i * cellSize, 0, i * cellSize, gameFieldHeight * cellSize);
 
-            if (!IsPossibleMoveFigure(currentFigure, 0, 0))
-                Defeat();
+            for (int i = 0; i <= gameFieldHeight; i++)
+                graphics.DrawLine(Pens.Black, 0, i * cellSize, gameFieldWidth * cellSize, i * cellSize);
+
+            foreach (Point cell in busyCells)
+                graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
+
+            currentFigure.Draw(graphics, cellSize);
+            nextFigure.Draw(graphics, cellSize);
         }
 
-        private bool IsFreeCell(int x, int y)
+        public void Update()
         {
-            return x < gameFieldWidth && y < gameFieldHeight && x >= 0 && y >= 0 && !busyCells.Contains(new Point(x, y));
-        }
+            if (IsPossibleMoveFigure(currentFigure, 0, 1))
+                currentFigure.Y++;
+            else
+            {
+                busyCells.AddRange(currentFigure.PointsOnGameField);
 
-        private bool IsPossibleMoveFigure(Figure figure, int offsetX, int offsetY)
-        {
-            return figure.PointsOnGameField.All(point =>  IsFreeCell(point.X + offsetX, point.Y + offsetY));
+                Score += CalculateScore();
+
+                AddNextFigure();
+            }
         }
 
         public void MoveFigure(Keys key)
@@ -68,30 +74,49 @@ namespace Tetris
 
             if (key == Keys.Up)
             {
-                if (IsPossibleMoveFigure(currentFigure.Rotate(currentFigure), 0, 0))
-                    currentFigure.Rotate(currentFigure);
+                if (CanRotate(currentFigure))
+                    currentFigure.Rotate();
             }
-
         }
 
-        public void Draw(Graphics graphics)
+        private void AddNextFigure()
         {
-            for (int i = 0; i <= gameFieldWidth; i++)
-                graphics.DrawLine(Pens.Black, i * cellSize, 0, i * cellSize, gameFieldHeight * cellSize);
+            currentFigure = nextFigure;
 
-            for (int i = 0; i <= gameFieldHeight; i++)
-                graphics.DrawLine(Pens.Black, 0, i * cellSize, gameFieldWidth * cellSize, i * cellSize);
+            //Устанавливаем фигуру сверху игрового поля
+            currentFigure.X = gameFieldWidth / 2;
+            currentFigure.Y = 1;
 
-            currentFigure.Draw(graphics, cellSize);
-            nextFigure.Draw(graphics, cellSize);
+            nextFigure = FigureFactory.CreateRandomFigure();
 
-            foreach (Point cell in busyCells)
-                graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
+            //Устанавливаем следующую фигуру под  полем "Следующая фигура"
+            nextFigure.X = gameFieldWidth + 2;
+            nextFigure.Y = 4;
+
+            if (!IsPossibleMoveFigure(currentFigure, 0, 0))
+                Defeat();
         }
 
-        private int CalculateScore(int lines)
+        private bool CanRotate(Figure figure)
         {
-            switch (lines)
+           Figure figureCopy = figure.Clone();
+            figureCopy.Rotate();
+            return IsPossibleMoveFigure(figureCopy, 0, 0);
+        }
+
+        private bool IsPossibleMoveFigure(Figure figure, int offsetX, int offsetY)
+        {
+            return figure.PointsOnGameField.All(point => IsFreeCell(point.X + offsetX, point.Y + offsetY));
+        }
+
+        private bool IsFreeCell(int x, int y)
+        {
+            return x < gameFieldWidth && y < gameFieldHeight && x >= 0 && y >= 0 && !busyCells.Contains(new Point(x, y));
+        }
+
+        private int CalculateScore()
+        {
+            switch (RemoveFullLines())
             {
                 case 0: return 0;
                 case 1: return 100;
@@ -102,33 +127,23 @@ namespace Tetris
             }
         }
 
-        public void Update()
+        private int RemoveFullLines()
         {
-            
+            int lines = 0;
+            for (int i = 0; i < gameFieldHeight; i++)
+                if (busyCells.Count(x => x.Y == i) == gameFieldWidth)
+                {
+                    Point[] cellsUp = busyCells
+                        .Where(x => x.Y < i)
+                        .Select(point => new Point(point.X, point.Y + 1))
+                        .ToArray();
+                    busyCells.RemoveAll(x => x.Y <= i);
+                    busyCells.AddRange(cellsUp);
 
-            if (currentFigure.PointsOnGameField.Any(x => x.Y == gameFieldHeight - 1)
-                || !IsPossibleMoveFigure(currentFigure, 0, 1))
-            {
-                busyCells.AddRange(currentFigure.PointsOnGameField);
-                
-                int lines = 0;
-                for (int i = 0; i < gameFieldHeight; i++)
-                    if (busyCells.Count(x => x.Y == i) == gameFieldWidth)
-                    {
-                        Point[] cellsUp = busyCells
-                            .Where(x => x.Y < i)
-                            .Select(point => new Point(point.X, point.Y + 1))
-                            .ToArray();
-                        busyCells.RemoveAll(x => x.Y <= i);
-                        busyCells.AddRange(cellsUp);
-                        
-                        lines++;
-                    }
-                Score += CalculateScore(lines);
-                AddNextFigure();
-            }
+                    lines++;
+                }
 
-            currentFigure.Y++;
+            return lines;
         }
     }
 }

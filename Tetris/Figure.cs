@@ -1,77 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tetris
 {
     class Figure
     {
-        public int X = 12;
-        public int Y = 4;
-        private int rotateNumber = 0;
-        private FigureType FigureType;
-        private Point[] points;
+        public int X;
+        public int Y;
         public Point[] PointsOnGameField => points.Select(point => new Point(point.X + X, point.Y + Y)).ToArray();
-
+        private int rotateNumber = 0;
+        private FigureType figureType;
+        private Point[] points;
+        
         public Figure(FigureType figureType, params Point[] points)
         {
-            FigureType = figureType;
+            this.figureType = figureType;
             this.points = points;
         }
 
         public void Draw(Graphics graphics, int cellSize)
         {
             foreach (Point cell in PointsOnGameField)
-              graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
+                graphics.FillRectangle(Brushes.BlueViolet, cell.X * cellSize, cell.Y * cellSize, cellSize, cellSize);
         }
 
-        public Figure Rotate(Figure figure)
+        public void Rotate()
         {
-            switch (FigureType)
+            switch (figureType)
             {
                 case FigureType.O:
                 case FigureType.Square:
-                    return figure;
-
+                    return;
                 case FigureType.I:
                 case FigureType.S:
                 case FigureType.Z:
                     if (rotateNumber == 0)
                     {
                         rotateNumber++;
-                        return RotateClockwise(figure);
+                         RotateClockwise();
                     }
-
                     else
                     {
                         rotateNumber--;
-                        return RotateCounterClockwise(figure);
+                         RotateCounterClockwise();
                     }
-
-
+                    break;
                 case FigureType.J:
                 case FigureType.L:
                 case FigureType.T:
-                   return RotateClockwise(figure);
-
-                default: throw new ArgumentOutOfRangeException();
-
+                   RotateClockwise();
+                    break;
             }
         }
 
-        private Figure RotateClockwise(Figure figure)
+        public Figure Clone()
         {
-          return new Figure (figure.FigureType, figure.points = points.Select(point => new Point(- point.Y,point.X )).ToArray());
+            return new Figure(figureType, points.ToArray())
+            {
+                X = this.X,
+                Y = this.Y,
+                rotateNumber = this.rotateNumber
+            };
         }
 
-        private Figure RotateCounterClockwise(Figure figure)
+        private void RotateClockwise()
         {
-           return new Figure(figure.FigureType, figure.points = points.Select(point => new Point(point.Y, -point.X)).ToArray());
+          points = points.Select(point => new Point(- point.Y,point.X )).ToArray();
+        }
+
+        private void RotateCounterClockwise()
+        {
+           points = points.Select(point => new Point(point.Y, -point.X)).ToArray();
         }
     }
 }

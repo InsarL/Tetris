@@ -1,6 +1,6 @@
 ﻿namespace Tetris
 {
-    partial class Form1
+    partial class Tetris
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tetris));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelScore = new System.Windows.Forms.Label();
+            this.labelNextFigure = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,36 +53,36 @@
             this.timer1.Interval = 600;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label1
+            // labelScore
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(302, 174);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(42, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Счёт: 0";
+            this.labelScore.AutoSize = true;
+            this.labelScore.Location = new System.Drawing.Point(302, 174);
+            this.labelScore.Name = "labelScore";
+            this.labelScore.Size = new System.Drawing.Size(42, 13);
+            this.labelScore.TabIndex = 1;
+            this.labelScore.Text = "Счёт: 0";
             // 
-            // label2
+            // labelNextFigure
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(280, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(108, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Следующая фигура:";
+            this.labelNextFigure.AutoSize = true;
+            this.labelNextFigure.Location = new System.Drawing.Point(280, 9);
+            this.labelNextFigure.Name = "labelNextFigure";
+            this.labelNextFigure.Size = new System.Drawing.Size(108, 13);
+            this.labelNextFigure.TabIndex = 2;
+            this.labelNextFigure.Text = "Следующая фигура:";
             // 
-            // Form1
+            // Tetris
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(426, 534);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.labelNextFigure);
+            this.Controls.Add(this.labelScore);
             this.Controls.Add(this.pictureBox1);
             this.KeyPreview = true;
             this.MaximizeBox = false;
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "Tetris";
+            this.Text = "Tetris";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
@@ -94,8 +94,8 @@
 
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelScore;
+        private System.Windows.Forms.Label labelNextFigure;
     }
 }
 
